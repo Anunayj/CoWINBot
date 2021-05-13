@@ -167,10 +167,13 @@ async function main() {
           }
         }
       }
+
+
     } catch (e) {
       console.error(e);
+      await new Promise(r => setTimeout(r, 10000));
     }
-    await new Promise(r => setTimeout(r, 1000));
+    await new Promise(r => setTimeout(r, 3000)); 
   }
 }
 main();
