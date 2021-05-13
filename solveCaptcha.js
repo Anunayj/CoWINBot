@@ -65,7 +65,7 @@ const lookuptable = {
   'fa80057a': '6'
 }
 
-export function getSolution(svg){
+export default function getSolution(svg){
   const canvas = SVG(svg);
   let solution = '';
   const paths = Array.from(canvas.children().sort((a,b) => a.x()-b.x()).filter(elem => (elem.width()/elem.height()) < 2))
