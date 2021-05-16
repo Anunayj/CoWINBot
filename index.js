@@ -1,15 +1,10 @@
-import fetch, {
-  Headers
-} from "node-fetch";
+import fetch from "node-fetch";
 import EventSource from 'eventsource'
 import pEvent from "p-event";
 import crypto from "crypto";
 import getSolution from "./solveCaptcha.js";
 import config from './config.js';
-import {
-  timeout,
-  TimeoutError
-} from 'promise-timeout';
+import { timeout } from 'promise-timeout';
 import ora from 'ora';
 import prettyMs from 'pretty-ms';
 const spinner = ora('Connecting to Smee.io').start();
@@ -22,13 +17,13 @@ let authToken = {
   lastSync: null
 };
 const headers = {
-  "authority": "cdn-api.co-vin.in",
   "accept": "application/json, text/plain, */*",
   "content-type": "application/json",
-  "origin": "https://selfregistration.cowin.gov.in",
   "sec-fetch-site": "cross-site",
   "sec-fetch-mode": "cors",
-  "user-agent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/90.0.4430.85 Safari/537.36 OPR/76.0.4017.94"
+  "user-agent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/90.0.4430.85 Safari/537.36 OPR/76.0.4017.94",
+  "cache-control":"no-cache",
+  "pragma": "no-cache"
 }
 
 
@@ -63,7 +58,6 @@ async function refreshAuth() {
     // console.debug(authToken);
     setTimeout(refreshAuth, 10 * 60 * 1000); // 10 minute timeout to refresh token
   } catch (e) {
-    console.error(e);
     setTimeout(refreshAuth, 5000);
   }
 }
@@ -109,13 +103,13 @@ async function schedule(preference) {
     "body": JSON.stringify({
       ...preference, // preference = {session_id,slot,center_id,beneficiaries[]}
       captcha,
-      dose: 1,
+      dose: config.dose,
     }),
     "method": "POST",
     "mode": "cors"
   });
   let jason = await response2.json();
-  if (response2.status !== '200') {
+  if (response2.status !== 200) {
     if (jason.errorCode == "APPOIN0045") throw ("IncorrectCaptcha");
     else throw ("Probably Full");
   };
@@ -126,27 +120,29 @@ async function schedule(preference) {
 async function main() {
   while (true) {
     try {
-      const date = new Date().toJSON().slice(0, 10).split('-').reverse().join('-');
-      const response = await fetch(`https://cdn-api.co-vin.in/api/v2/appointment/sessions/public/calendarByDistrict?district_id=${config.district_id}&date=${date}`, {
-        "headers": headers,
+      const currentDate = new Date(new Date().getTime() + 24 * 60 * 60 * 1000);
+      const day = currentDate.getDate();
+      const month = currentDate.getMonth() + 1;
+      const year = currentDate.getFullYear();
+      const date = day.toString().padStart(2,0) + "-" + month.toString().padStart(2,0) + "-" + year;
+      const response = await fetch(`https://cdn-api.co-vin.in/api/v2/appointment/sessions/public/findByDistrict?district_id=${config.district_id}&date=${date}`, {
+        "headers": {
+          ...headers
+        }
+          ,
         "body": null,
         "method": "GET",
         "mode": "cors"
       });
       const data = await response.json();
-      const filteredCenters = data.centers.filter((x) => config.preferred_center_ids.includes(x.center_id));
-      for (let center of filteredCenters) {
-        for (let session of center.sessions)
-          session.center_id = center.center_id;
-      }
-      const filteredSessions = filteredCenters.reduce((accumulator, currentValue) => {
-          return (accumulator.concat(currentValue.sessions));
-        }, [])
+      const filteredSessions = data.sessions
         .filter(x => x.min_age_limit <= config.age &&
           config.vaccine.includes(x.vaccine) &&
           config.preferred_dates.includes(x.date) &&
-          x.available_capacity >= config.beneficiaries.length
+          x[`available_capacity_dose${config.dose}`] >= config.beneficiaries.length &&
+          config.preferred_center_ids.includes(x.center_id)
         )
+
       for (let slot of config.preferred_slots) {
         for (let i = 0; i < filteredSessions.length; i++) {
           try {
@@ -170,10 +166,9 @@ async function main() {
 
 
     } catch (e) {
-      console.error(e);
       await new Promise(r => setTimeout(r, 10000));
     }
-    await new Promise(r => setTimeout(r, 3000)); 
+    await new Promise(r => setTimeout(r, 3100));
   }
 }
 main();

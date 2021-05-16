@@ -13,5 +13,5 @@ export default {
     preferred_dates: ['13-05-2020','14-05-2020','15-05-2020'],
     age: 18,
     vaccine: ["COVAXIN","COVISHIELD"]
-
+    dose: 1;
 }
