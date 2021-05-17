@@ -1,5 +1,8 @@
 import logo from './logo.svg';
 import './App.css';
+import solveCaptcha from './solveCaptcha';
+import AuthHandler from './refreshAuth';
+// (new AuthHandler('9406531900','https://smee.io/J9FRgF24AbDv82pg')).start();
 
 function App() {
   return (
