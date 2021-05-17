@@ -2,7 +2,12 @@ import logo from './logo.svg';
 import './App.css';
 import solveCaptcha from './solveCaptcha';
 import AuthHandler from './refreshAuth';
+import VacancyEmitter from './vacancyEmitter';
 // (new AuthHandler('9406531900','https://smee.io/J9FRgF24AbDv82pg')).start();
+// let vacancy = new VacancyEmitter()
+// vacancy.on('event',console.log);
+// vacancy.start();
+
 
 function App() {
   return (
