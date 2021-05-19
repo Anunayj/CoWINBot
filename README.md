@@ -14,7 +14,7 @@ Download the IFTTT app and create the following IFTTT recipie:
 
 ![ifttt recipie](https://i.ibb.co/Ry4JRhL/ifttt.png)
 
-
+Android Doze/Other battery optimization services might put IFTTT to sleep stopping it from sending OTPs, It's recommended to keep IFTTT in foreground, and/or add to to whitelist in Battery Optimizations.
 # Configuration
 Rename `config.template.js` to `config.js` and fill it with appropriate details, Example:
 ```js
@@ -50,6 +50,8 @@ node index.js
 I do not really plan to provide support, so if you're having trouble getting this to work, your problem. Ask someone else, learn programming.
 
 #### Q. Why don't you just make a easy to use website that does this?
+EDIT: take a look at [web](https://github.com/Anunayj/CoWINBot/tree/web) branch for progress, PRs are welcome. I am not the best at UI design.
+
 The code does not use any native nodejs, so it can be packaged to work in a browser easily, and I took care that is the case when I wrote this. So if you know how to do it, go ahead and do a PR. 
 I personally do not feel like doing it right now, might in future, who knows?
 
