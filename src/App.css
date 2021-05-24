@@ -2,6 +2,18 @@
   text-align: center;
 }
 
+.flex-container {
+  display: flex;
+  flex-direction: column;
+}
+
+.box {
+  width: auto;
+  min-width: 30vw;
+  padding: 2rem;
+}
+
+
 .App-logo {
   height: 40vmin;
   pointer-events: none;

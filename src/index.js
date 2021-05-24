@@ -3,14 +3,17 @@ import ReactDOM from 'react-dom';
 import './index.css';
 import App from './App';
 import reportWebVitals from './reportWebVitals';
-
 import { ThemeProvider, createMuiTheme } from '@material-ui/core/styles';
+import {blue, pink} from '@material-ui/core/colors';
 import CssBaseline from '@material-ui/core/CssBaseline';
 
 const theme = createMuiTheme({
   palette: {
     type: "dark",
-  }
+    primary: blue,
+    secondary: pink,
+  },
+  
 });
 
 ReactDOM.render(

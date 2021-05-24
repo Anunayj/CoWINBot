@@ -2,11 +2,13 @@ import axios from 'axios';
 import crypto from 'crypto'
 import pEvent from "p-event";
 import { timeout } from 'promise-timeout';
+import { EventEmitter } from 'events';
 
 axios.defaults.baseURL = 'https://cdn-api.co-vin.in/api/v2/';
 
-export default class Auth{
+export default class Auth extends EventEmitter{
   constructor(mobile, smee){
+    super()
     this.mobile = mobile;
     this.webhook = new EventSource(smee);
     this.authToken = {
@@ -38,6 +40,7 @@ export default class Auth{
           })
           const txnId = response.data.txnId;
           const request = await timeout(pEvent(this.webhook, 'message'), 180 * 1000); //Will error out after 180 seconds
+          if(!this.active) break;
           const message = JSON.parse(request.data).body.sms;
           const otp = message.match(/\d{6}/gm)[0];
           const response2= await axios.post('/auth/validateMobileOtp',{
@@ -47,6 +50,7 @@ export default class Auth{
           if (response2.data.token) {
             this.authToken.token = response2.data.token
             this.authToken.lastSync = Date.now();
+            this.emit('auth',this.authToken);
           }
           console.debug(this.authToken);
           await new Promise(r => setTimeout(r, 10*60*1000)); // 10 Minutes

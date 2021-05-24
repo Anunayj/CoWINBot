@@ -16,9 +16,8 @@ export default class VacancyEmitter extends EventEmitter{
     constructor(config = {
         district_id: '312',
         age : 46,
-        dose : 1,
+        dose : [1,2],
         preferred_center_ids: [642147],
-        minSlots : 1
     }){
         super();
         this.config = config;
@@ -50,7 +49,8 @@ export default class VacancyEmitter extends EventEmitter{
                 }})
                 const filteredSessions = response.data.sessions
                 .filter(x => x.min_age_limit <= this.config.age &&
-                    x[`available_capacity_dose${this.config.dose}`] >= this.config.minSlots &&
+                    // (x[`available_capacity_dose${this.config.dose}`] >= 1) &&
+                    this.config.dose.reduce((accum,current) => accum || (x[`available_capacity_dose${current}`] >= 1),false) && 
                     this.config.preferred_center_ids.includes(x.center_id)
                 )
                 if(filteredSessions.length > 0){
