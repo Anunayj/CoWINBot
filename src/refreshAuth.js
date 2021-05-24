@@ -3,7 +3,6 @@ import crypto from 'crypto'
 import pEvent from "p-event";
 import { timeout } from 'promise-timeout';
 import { EventEmitter } from 'events';
-
 axios.defaults.baseURL = 'https://cdn-api.co-vin.in/api/v2/';
 
 export default class Auth extends EventEmitter{
@@ -11,6 +10,12 @@ export default class Auth extends EventEmitter{
     super()
     this.mobile = mobile;
     this.webhook = new EventSource(smee);
+    this.eventEmitter = new EventEmitter();
+    this.webhook.addEventListener('message',function (request){
+      const message = JSON.parse(request.data).body.sms;
+      const otp = message.match(/\d{6}/gm)[0];
+      this.eventEmitter.emit('otp', otp);
+    }.bind(this))
     this.authToken = {
       token: "",
       lastSync: null
@@ -18,6 +23,9 @@ export default class Auth extends EventEmitter{
     this.active = false;
   }
 
+  getWebhook(){
+    return this.eventEmitter;
+  }
   getToken(){
     return this.authToken;
   }
@@ -39,10 +47,8 @@ export default class Auth extends EventEmitter{
             mobile: this.mobile,
           })
           const txnId = response.data.txnId;
-          const request = await timeout(pEvent(this.webhook, 'message'), 180 * 1000); //Will error out after 180 seconds
+          const otp = await timeout(pEvent(this.eventEmitter, 'otp'), 180 * 1000); //Will error out after 180 seconds
           if(!this.active) break;
-          const message = JSON.parse(request.data).body.sms;
-          const otp = message.match(/\d{6}/gm)[0];
           const response2= await axios.post('/auth/validateMobileOtp',{
               txnId,
               otp: crypto.createHash('sha256').update(otp).digest('hex')

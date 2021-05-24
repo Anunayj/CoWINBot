@@ -28,7 +28,9 @@ class App extends React.Component {
       authToken: {
         token: "",
         lastSync: null
-      }
+      },
+      webhook: null,
+      benefeciaries: [],
     }
     this.handleLogin = this.handleLogin.bind(this);
   }
@@ -37,6 +39,9 @@ class App extends React.Component {
   handleLogin(event){
     event.preventDefault();
     if(this.state.isRunning){
+      this.setState({
+        webhook:null
+      })
       this.auth.stop();
       this.setState({isRunning:false})
     }else{
@@ -47,6 +52,9 @@ class App extends React.Component {
           authToken
         })
       }.bind(this))
+      this.setState({
+        webhook:this.auth.getWebhook()
+      })
       this.auth.start();
     }
       
@@ -58,6 +66,7 @@ class App extends React.Component {
           <AuthForm onSubmit ={this.handleLogin}
           isRunning={this.state.isRunning}
           authToken={this.state.authToken}
+          webhook={this.state.webhook}
           />
           <Copyright />
         </header>

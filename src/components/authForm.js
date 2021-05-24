@@ -35,8 +35,10 @@ class AuthForm extends React.Component {
             mobile: "",
             smee: "",
             time: "",
+            otp: ""
         };
         this.onInputchange = this.onInputchange.bind(this);
+        this.manualOTP = this.manualOTP.bind(this)
     }
     componentDidMount(){
         axios.head('https://smee.io/new').then((response) => {
@@ -57,8 +59,15 @@ class AuthForm extends React.Component {
           [event.target.name]: event.target.value
         });
       }
+    manualOTP(){
+        console.log(this.props.webhook);
+        this.props.webhook.emit('otp',this.state.otp)
+        this.setState({
+            otp:""
+        })
+    }
     render() {
-        const { classes , onSubmit, isRunning} = this.props;
+        const { classes , onSubmit, isRunning, webhook} = this.props;
         return (
             <Paper className="box" component="main" elevation={3}>
               <CssBaseline />
@@ -113,13 +122,27 @@ class AuthForm extends React.Component {
                     : "Sign In"}
                   </Button>
                 </form>
-                <Typography style ={{alignSelf: "flex-start"}} variant="overline">
+                <Typography style={{alignSelf: "flex-start"}} variant="overline">
                 {
                     isRunning
-                    ? (this.state.time)
+                    ? this.state.time
                     : ""
                 }
                 </Typography>
+                <div style={{alignSelf: "flex-start"}}>
+                {
+                    webhook
+                    ?  <TextField
+                    id="otp"
+                    name="otp"
+                    label="Manual OTP"
+                    onChange={this.onInputchange}
+                    value={this.state.otp}
+                    InputProps={{endAdornment: <Button size="large" onClick={this.manualOTP}>➤</Button>}}
+                  />
+                    : ""
+                }
+                </div>
               </div>
             </Paper>
           );
