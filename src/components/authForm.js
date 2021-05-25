@@ -50,7 +50,7 @@ class AuthForm extends React.Component {
             this.setState({
                 time : this.props.authToken.lastSync 
                 ? `Time since last authentication : ${timeSince(this.props.authToken.lastSync)}` //color this idk
-                : <div>Trying to get OTP <CircularProgress color="secondary" size="1em"/></div>,
+                : <>Trying to get OTP <CircularProgress color="secondary" size="1em"/></>,
             })
         }.bind(this),1000)
     }
@@ -118,7 +118,7 @@ class AuthForm extends React.Component {
                     className={classes.submit}
                   >
                     {isRunning 
-                    ? <div><CircularProgress size="1em"/> Stop</div>
+                    ? <><CircularProgress size="1em"/> Stop</>
                     : "Sign In"}
                   </Button>
                 </form>

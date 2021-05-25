@@ -2,6 +2,7 @@ import './App.css';
 import React from 'react'
 import Copyright from './components/copyright';
 import AuthForm from './components/authForm'
+import Benefeciaries from './components/beneficaries'
 import solveCaptcha from './solveCaptcha';
 import AuthHandler from './refreshAuth';
 import VacancyEmitter from './vacancyEmitter';
@@ -33,6 +34,7 @@ class App extends React.Component {
       benefeciaries: [],
     }
     this.handleLogin = this.handleLogin.bind(this);
+    this.setParentState = this.setState.bind(this);
   }
 
 
@@ -59,14 +61,21 @@ class App extends React.Component {
     }
       
   }
+
   render() {
     return (
       <div className="App">
-        <header className="App-header">   
+        <header className="App-header">
+    
           <AuthForm onSubmit ={this.handleLogin}
           isRunning={this.state.isRunning}
           authToken={this.state.authToken}
           webhook={this.state.webhook}
+          />
+          <Benefeciaries
+          authToken={this.state.authToken}
+          benefeciaries={this.state.benefeciaries}
+          setParentState={this.setParentState}
           />
           <Copyright />
         </header>
