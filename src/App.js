@@ -3,6 +3,8 @@ import React from 'react'
 import Copyright from './components/copyright';
 import AuthForm from './components/authForm'
 import Benefeciaries from './components/beneficaries'
+import CenterSelector from './components/centers'
+
 import solveCaptcha from './solveCaptcha';
 import AuthHandler from './refreshAuth';
 import VacancyEmitter from './vacancyEmitter';
@@ -32,6 +34,7 @@ class App extends React.Component {
       },
       webhook: null,
       benefeciaries: [],
+      centers:[]
     }
     this.handleLogin = this.handleLogin.bind(this);
     this.setParentState = this.setState.bind(this);
@@ -74,6 +77,10 @@ class App extends React.Component {
           />
           <Benefeciaries
           authToken={this.state.authToken}
+          benefeciaries={this.state.benefeciaries}
+          setParentState={this.setParentState}
+          />
+          <CenterSelector
           benefeciaries={this.state.benefeciaries}
           setParentState={this.setParentState}
           />
