@@ -78,7 +78,7 @@ class BenefeciaryTable extends React.Component{
                   </TableRow>
                 </TableHead>
                 <TableBody>
-                  {this.progress ? ""
+                  {this.progress ? <></>
                   : this.benefeciaries.map((row) => (
                     <TableRow key={row.beneficiary_reference_id}>
                       <TableCell><Checkbox color="primary" checked={row.checked} onChange={this.handleChange} name={row.beneficiary_reference_id}/></TableCell>
@@ -89,7 +89,7 @@ class BenefeciaryTable extends React.Component{
                   ))}
                   {this.benefeciaries.length===0 || this.progress
                   ? <TableRow><TableCell colspan={4}><Skeleton/></TableCell></TableRow>
-                  : ""
+                  : <></>
                   }
                 </TableBody>
               </Table>

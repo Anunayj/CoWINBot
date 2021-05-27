@@ -1,25 +1,19 @@
 import axios from 'axios';
 import EventEmitter from 'events';
-
+import moment from 'moment'
 axios.defaults.baseURL = 'https://cdn-api.co-vin.in/api/v2/';
 
-function getTommorowDate(){
-    const currentDate = new Date(new Date().getTime() + 24 * 60 * 60 * 1000);
-    const day = currentDate.getDate();
-    const month = currentDate.getMonth() + 1;
-    const year = currentDate.getFullYear();
-    const date = day.toString().padStart(2,0) + "-" + month.toString().padStart(2,0) + "-" + year;
-    return date;
-}
 
 export default class VacancyEmitter extends EventEmitter{
     constructor(config = {
         district_id: '312',
-        age : 46,
+        minAge : 46,
         dose : [1,2],
         preferred_center_ids: [642147],
+        date : moment().format('DD-MM-YYYY')
     }){
         super();
+        console.log(config)
         this.config = config;
         this.state = {
             isActive: false,
@@ -45,10 +39,10 @@ export default class VacancyEmitter extends EventEmitter{
                 let response = await axios.get('/appointment/sessions/public/findByDistrict', {
                     params: {
                         district_id: this.config.district_id,
-                        date: getTommorowDate()
+                        date: this.config.date
                 }})
                 const filteredSessions = response.data.sessions
-                .filter(x => x.min_age_limit <= this.config.age &&
+                .filter(x => x.min_age_limit <= this.config.minAge &&
                     // (x[`available_capacity_dose${this.config.dose}`] >= 1) &&
                     this.config.dose.reduce((accum,current) => accum || (x[`available_capacity_dose${current}`] >= 1),false) && 
                     this.config.preferred_center_ids.includes(x.center_id)

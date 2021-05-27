@@ -96,6 +96,9 @@ class CenterSelector extends React.Component{
                           cityList:response.data.districts,
                           city:0
                         })
+                        this.props.setParentState({
+                          city:0
+                        })
                       }.bind(this))
                     }.bind(this)}
                   >
@@ -115,6 +118,9 @@ class CenterSelector extends React.Component{
                     value={this.state.city}
                     onChange={function(event){
                       this.setState({
+                        city:event.target.value
+                      })
+                      this.props.setParentState({
                         city:event.target.value
                       })
                     }.bind(this)}
@@ -143,7 +149,7 @@ class CenterSelector extends React.Component{
             {
               this.error
               ? <Typography color="red">Some Error occured while doing that request</Typography>
-              : ""
+              : <></>
             }
             { this.progress || this.centers.length
             ? <>
@@ -157,7 +163,7 @@ class CenterSelector extends React.Component{
                   </TableRow>
                 </TableHead>
                 <TableBody>
-                  {this.progress ? ""
+                  {this.progress ? <></>
                   : this.centers.map((row) => (
                     <TableRow key={row.center_id}>
                       <TableCell><Checkbox color="primary" checked={row.checked} onChange={this.handleChange} name={row.center_id}/></TableCell>
@@ -168,13 +174,13 @@ class CenterSelector extends React.Component{
                   ))}
                   {this.centers.length===0 || this.progress
                   ? <TableRow><TableCell colspan={3}><Skeleton/></TableCell></TableRow>
-                  : ""
+                  : <></>
                   }
                 </TableBody>
               </Table>
               </TableContainer>
               </>
-              : ""
+              : <></>
             }
             </div>
           );
